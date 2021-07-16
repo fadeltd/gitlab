@@ -131,5 +131,20 @@ class Gitlab::Client
       get("/projects/#{url_encode project}/protected_branches/#{url_encode branch}")
     end
     alias repo_protected_branch protected_branch
+
+    # Require code owner approvals for a single branch
+    #
+    # @example
+    #   Gitlab.require_codeowner_branch(3, 'master', code_owner_approval_required: true)
+    #
+    # @param  [Integer, String] project The ID or name of a project.
+    # @param  [String] name The name of the branch or wildcard
+    # @param  [Hash] options A customizable set of options.
+    # @option options [Boolean] :code_owner_approval_required true to allow developers to push to the branch (default = false)
+    # @return [Gitlab::ObjectifiedHash]
+    def require_codeowner_branch(project, branch, options = {})
+      patch("/projects/#{url_encode project}/protected_branchs", body: { name: branch }.merge(options))
+    end
+    alias repo_require_codeowner_branch require_codeowner_branch
   end
 end
